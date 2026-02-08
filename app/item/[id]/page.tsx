@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import type { FeedItem } from "@/lib/types";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 
 interface Props {
@@ -95,12 +96,13 @@ export default async function ItemPage({ params }: Props) {
               <span className="text-zinc-300 dark:text-zinc-600">&middot;</span>
               <span className="flex items-center gap-1.5">
                 {favicon && (
-                  <img
+                  <Image
                     src={favicon}
                     alt=""
                     width={14}
                     height={14}
                     className="rounded-sm"
+                    unoptimized
                   />
                 )}
                 {sourceDomain}

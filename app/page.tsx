@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import type { FeedItem } from "@/lib/types";
 import RefreshButton from "./components/RefreshButton";
 import Link from "next/link";
+import Image from "next/image";
 
 const CATEGORIES = ["AI News", "Sports", "Job"] as const;
 
@@ -97,12 +98,13 @@ const CategorySection = ({
                 >
                   <div className="flex items-start gap-2.5">
                     {favicon && (
-                      <img
+                      <Image
                         src={favicon}
                         alt=""
                         width={16}
                         height={16}
                         className="mt-0.5 shrink-0 rounded-sm"
+                        unoptimized
                       />
                     )}
                     <div className="min-w-0">
