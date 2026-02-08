@@ -3,39 +3,54 @@ import { db } from "@/lib/db";
 import * as cheerio from "cheerio";
 import Parser from "rss-parser";
 
-interface HNItem {
-  title: string;
-  url?: string;
-  id: number;
-}
-
 interface ScrapedItem {
   title: string;
   url: string;
+  description: string;
   category: "AI News" | "Sports" | "Job";
 }
 
-const AI_KEYWORDS = /\b(ai|llm|gpt|openai|anthropic|gemini|claude|machine learning|deep learning)\b/i;
+const AI_FEEDS = [
+  "https://techcrunch.com/category/artificial-intelligence/feed/",
+  "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml",
+  "https://feeds.arstechnica.com/arstechnica/technology-lab",
+];
+
+const AI_KEYWORDS = /\b(ai|llm|gpt|openai|anthropic|gemini|claude|machine learning|deep learning|artificial intelligence)\b/i;
 
 async function fetchAINews(): Promise<ScrapedItem[]> {
-  const res = await fetch("https://hacker-news.firebaseio.com/v0/topstories.json");
-  const storyIds: number[] = await res.json();
+  const parser = new Parser();
+
+  const results = await Promise.allSettled(
+    AI_FEEDS.map((url) => parser.parseURL(url))
+  );
 
   const items: ScrapedItem[] = [];
+  const seen = new Set<string>();
 
-  for (const id of storyIds) {
-    if (items.length >= 5) break;
+  for (const result of results) {
+    if (result.status !== "fulfilled") continue;
 
-    const storyRes = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`);
-    const story: HNItem = await storyRes.json();
+    for (const item of result.value.items || []) {
+      if (items.length >= 15) break;
 
-    if (story.title && AI_KEYWORDS.test(story.title)) {
+      const url = item.link || "";
+      if (!url || seen.has(url)) continue;
+
+      // For Ars Technica (last feed), filter by AI keywords
+      const isArsTechnica = url.includes("arstechnica.com");
+      if (isArsTechnica && !AI_KEYWORDS.test(item.title || "")) continue;
+
+      seen.add(url);
       items.push({
-        title: story.title,
-        url: story.url || `https://news.ycombinator.com/item?id=${story.id}`,
+        title: item.title || "Untitled",
+        url,
+        description: (item.contentSnippet || item.content || "").slice(0, 300).trim(),
         category: "AI News",
       });
     }
+
+    if (items.length >= 15) break;
   }
 
   return items;
@@ -45,31 +60,62 @@ async function fetchSportsNews(): Promise<ScrapedItem[]> {
   const parser = new Parser();
   const feed = await parser.parseURL("https://www.espn.com/espn/rss/news");
 
-  return (feed.items || []).slice(0, 5).map((item) => ({
+  return (feed.items || []).slice(0, 15).map((item) => ({
     title: item.title || "Untitled",
     url: item.link || "",
+    description: (item.contentSnippet || item.content || "").slice(0, 300).trim(),
     category: "Sports" as const,
   }));
 }
 
+const JOB_BOARDS = [
+  { url: "https://boards.greenhouse.io/vercel", company: "Vercel" },
+  { url: "https://boards.greenhouse.io/anthropic", company: "Anthropic" },
+  { url: "https://boards.greenhouse.io/openai", company: "OpenAI" },
+  { url: "https://boards.greenhouse.io/stripe", company: "Stripe" },
+];
+
 async function fetchJobs(): Promise<ScrapedItem[]> {
-  const res = await fetch("https://boards.greenhouse.io/vercel");
-  const html = await res.text();
-  const $ = cheerio.load(html);
-
   const items: ScrapedItem[] = [];
+  const seen = new Set<string>();
 
-  $("a").each((_, el) => {
-    const title = $(el).text().trim();
-    const href = $(el).attr("href");
+  for (const board of JOB_BOARDS) {
+    if (items.length >= 15) break;
 
-    if (title && href && /engineer/i.test(title)) {
-      const url = href.startsWith("http")
-        ? href
-        : `https://boards.greenhouse.io${href}`;
-      items.push({ title, url, category: "Job" });
+    try {
+      const res = await fetch(board.url);
+      const html = await res.text();
+      const $ = cheerio.load(html);
+
+      $("a").each((_, el) => {
+        if (items.length >= 15) return false;
+
+        const title = $(el).text().trim();
+        const href = $(el).attr("href");
+
+        if (title && href && /engineer|software|swe|developer/i.test(title)) {
+          const url = href.startsWith("http")
+            ? href
+            : `https://boards.greenhouse.io${href}`;
+
+          if (!seen.has(url)) {
+            seen.add(url);
+            const location = $(el).closest("div").find(".location").text().trim();
+            items.push({
+              title: `${title} (${board.company})`,
+              url,
+              description: location
+                ? `${board.company} — ${location}`
+                : `${board.company} — Engineering role`,
+              category: "Job",
+            });
+          }
+        }
+      });
+    } catch (e) {
+      console.error(`Failed to fetch jobs from ${board.company}:`, e);
     }
-  });
+  }
 
   return items;
 }
@@ -86,10 +132,18 @@ export async function GET(request: Request) {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
       url TEXT UNIQUE NOT NULL,
+      description TEXT DEFAULT '',
       category TEXT NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Migrate existing table: add description column if missing
+  try {
+    await db.execute("ALTER TABLE feed_items ADD COLUMN description TEXT DEFAULT ''");
+  } catch {
+    // Column already exists — ignore
+  }
 
   // Fetch all sources in parallel, isolating errors
   const results = await Promise.allSettled([
@@ -116,8 +170,8 @@ export async function GET(request: Request) {
   for (const item of allItems) {
     try {
       const result = await db.execute({
-        sql: "INSERT OR IGNORE INTO feed_items (title, url, category) VALUES (?, ?, ?)",
-        args: [item.title, item.url, item.category],
+        sql: "INSERT OR IGNORE INTO feed_items (title, url, description, category) VALUES (?, ?, ?, ?)",
+        args: [item.title, item.url, item.description, item.category],
       });
       if (result.rowsAffected > 0) inserted++;
     } catch (e) {

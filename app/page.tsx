@@ -2,13 +2,14 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import type { FeedItem } from "@/lib/types";
 import RefreshButton from "./components/RefreshButton";
+import Link from "next/link";
 
 const CATEGORIES = ["AI News", "Sports", "Job"] as const;
 
 async function getItems(): Promise<FeedItem[]> {
   try {
     const result = await db.execute(
-      "SELECT id, title, url, category, created_at FROM feed_items ORDER BY created_at DESC"
+      "SELECT id, title, url, description, category, created_at FROM feed_items ORDER BY created_at DESC"
     );
     return result.rows as unknown as FeedItem[];
   } catch {
@@ -50,15 +51,18 @@ const CategorySection = ({
       <ul className="grid gap-3">
         {items.map((item) => (
           <li key={item.id}>
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href={`/item/${item.id}`}
               className="block rounded-lg border border-zinc-200 p-4 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
             >
               <p className="font-medium text-foreground">{item.title}</p>
+              {item.description && (
+                <p className="mt-1 text-sm text-zinc-500 line-clamp-2">
+                  {item.description}
+                </p>
+              )}
               <time
-                className="mt-1 block text-xs text-zinc-500"
+                className="mt-1 block text-xs text-zinc-400"
                 dateTime={item.created_at}
               >
                 {new Date(item.created_at).toLocaleDateString("en-US", {
@@ -67,7 +71,7 @@ const CategorySection = ({
                   year: "numeric",
                 })}
               </time>
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
@@ -90,7 +94,15 @@ export default async function Home() {
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Personal Assistant
           </h1>
-          <RefreshButton refreshFeed={refreshFeed} />
+          <div className="flex items-center gap-4">
+            <Link
+              href="/about"
+              className="text-sm text-zinc-500 transition-colors hover:text-foreground"
+            >
+              About
+            </Link>
+            <RefreshButton refreshFeed={refreshFeed} />
+          </div>
         </header>
 
         <div className="grid gap-10 md:grid-cols-3">

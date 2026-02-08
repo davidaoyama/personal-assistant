@@ -26,3 +26,22 @@ cheerio, rss-parser, Vercel Cron.
 - [x] Create `vercel.json` — Cron schedule (daily 9 AM EST)
 - [x] Edit README file to describe the purpose and use case of this project
 - [x] Verify — Build passes, manual test of cron + UI + refresh + dedup
+
+---
+
+## Phase 2: Dashboard Enhancement — 15 Items, Detail Pages, Better AI Sources, About Page
+
+### Context
+Expand to 15 items per category, improve AI news quality (replace HN with dedicated RSS feeds), add detail pages for each item, and create an About page.
+
+### Implementation Checklist
+
+- [ ] **Update DB schema & types** — Add `description` field to `FeedItem` interface and `ScrapedItem`. Add `ALTER TABLE` migration + update `CREATE TABLE` and `INSERT` in cron route.
+- [ ] **Overhaul AI News fetching** — Replace HN API with TechCrunch AI, The Verge AI, and Ars Technica RSS feeds. Collect 15 items with descriptions from `contentSnippet`.
+- [ ] **Update Sports fetching** — Increase limit from 5 to 15 items. Extract description from RSS `contentSnippet`.
+- [ ] **Overhaul Jobs fetching** — Expand to multiple Greenhouse boards (Vercel, Anthropic, OpenAI, Stripe). Filter for SWE/engineering roles, cap at 15, include company name in title.
+- [ ] **Update main page** — Add `description` to SQL query. Change card links from external URLs to `/item/[id]` detail pages using `Link`. Add description preview with `line-clamp-2`. Add nav link to About page.
+- [ ] **Create detail page** (`app/item/[id]/page.tsx`) — Server Component with DB lookup, `notFound()` handling, category badge, description, "Visit Source" button, back link, `generateMetadata`.
+- [ ] **Create About page** (`app/about/page.tsx`) — Static page explaining data sources, cron schedule, and tech stack.
+- [ ] **Add navigation to layout** — Minimal nav bar with Home and About links in `app/layout.tsx`.
+- [ ] **Verify** — Build passes, lint passes, ~15 items per category with descriptions, detail page works, about page works, 404 for invalid IDs, dedup still works.
