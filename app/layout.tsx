@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Personal Assistant Dashboard",
-  description: "AI news, sports headlines, and job postings in one feed.",
+  title: "David's Daily Standup",
+  description: "AI news, sports headlines, and SWE job openings — all in one feed.",
 };
 
 export default function RootLayout({

@@ -2,8 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About — Personal Assistant Dashboard",
-  description: "How the Personal Assistant Dashboard works.",
+  title: "About — David's Daily Standup",
+  description: "Why I built this dashboard and how it works.",
 };
 
 export default function AboutPage() {
@@ -23,12 +23,13 @@ export default function AboutPage() {
 
         <div className="mt-8 space-y-8 text-foreground leading-relaxed">
           <section>
-            <h2 className="text-xl font-semibold">What It Does</h2>
+            <h2 className="text-xl font-semibold">Why I Built This</h2>
             <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-              The Personal Assistant Dashboard aggregates three types of content
-              into a single page: AI &amp; tech news, sports headlines, and
-              software engineering job openings. Instead of checking multiple
-              sites, you get a curated feed updated daily.
+              I want to stay on top of what&apos;s happening in AI, I love
+              sports (especially the Falcons and Seahawks), and I want to know
+              about open SWE roles at companies I care about. Instead of
+              bouncing between a dozen tabs every morning, I built this to
+              aggregate everything into one quick daily standup view.
             </p>
           </section>
 

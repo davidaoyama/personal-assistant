@@ -147,7 +147,7 @@ export default async function Home() {
       <main className="mx-auto max-w-4xl">
         <header className="mb-10 flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Personal Assistant
+            David&apos;s Daily Standup
           </h1>
           <div className="flex items-center gap-4">
             <Link
