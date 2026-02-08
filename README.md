@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Assistant Dashboard
+
+A feed aggregator that pulls AI news, sports headlines, and job postings into a single dashboard. Data is fetched daily via a Vercel Cron job, stored in Turso (edge SQLite), and displayed in a responsive Next.js app.
+
+## Data Sources
+
+- **AI News** — Hacker News top stories filtered for AI/LLM/GPT keywords
+- **Sports** — ESPN top headlines via RSS
+- **Jobs** — Engineering roles scraped from Vercel's Greenhouse board
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router, TypeScript)
+- **Database:** Turso (LibSQL)
+- **Styling:** Tailwind CSS v4
+- **Scraping:** cheerio + rss-parser
+- **Hosting:** Vercel (with Vercel Cron)
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repo and install dependencies:
+
+```bash
+npm install
+```
+
+2. Create a `.env.local` file with your credentials:
+
+```
+TURSO_DATABASE_URL=your_turso_url
+TURSO_AUTH_TOKEN=your_turso_token
+CRON_SECRET=your_secret
+```
+
+3. Run the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Trigger the cron endpoint to populate data:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+curl -H "Authorization: Bearer your_secret" http://localhost:3000/api/cron
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+5. Visit [http://localhost:3000](http://localhost:3000) to see your feed.
 
-## Learn More
+## How It Works
 
-To learn more about Next.js, take a look at the following resources:
+- **`/api/cron`** — Fetches from all 3 sources, upserts into Turso (duplicates ignored via unique URL constraint). Protected by `CRON_SECRET`.
+- **`/`** — Server Component that queries Turso and displays items grouped by category. Includes a "Refresh Feed" button that triggers a Server Action to re-fetch data.
+- **Vercel Cron** — Configured in `vercel.json` to run daily at 9:00 AM EST.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy to Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Push this repo to GitHub.
+2. Import the project at [vercel.com/new](https://vercel.com/new).
+3. Add these environment variables in the Vercel dashboard under **Settings > Environment Variables**:
+   - `TURSO_DATABASE_URL`
+   - `TURSO_AUTH_TOKEN`
+   - `CRON_SECRET`
+4. Deploy. The cron job will automatically run daily at 9:00 AM EST per `vercel.json`.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> **Note:** Vercel Cron requires a Pro or Enterprise plan for schedules more frequent than once per day. The daily schedule used here works on all plans including Hobby.
