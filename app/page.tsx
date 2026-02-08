@@ -6,6 +6,40 @@ import Link from "next/link";
 
 const CATEGORIES = ["AI News", "Sports", "Job"] as const;
 
+const CATEGORY_STYLES: Record<
+  string,
+  { border: string; dot: string; badge: string; hover: string }
+> = {
+  "AI News": {
+    border: "border-l-violet-500",
+    dot: "bg-violet-500",
+    badge: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+    hover: "hover:border-l-violet-400",
+  },
+  Sports: {
+    border: "border-l-emerald-500",
+    dot: "bg-emerald-500",
+    badge:
+      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+    hover: "hover:border-l-emerald-400",
+  },
+  Job: {
+    border: "border-l-blue-500",
+    dot: "bg-blue-500",
+    badge: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+    hover: "hover:border-l-blue-400",
+  },
+};
+
+function getFaviconUrl(url: string): string {
+  try {
+    const domain = new URL(url).hostname;
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=16`;
+  } catch {
+    return "";
+  }
+}
+
 async function getItems(): Promise<FeedItem[]> {
   try {
     const result = await db.execute(
@@ -37,47 +71,68 @@ const CategorySection = ({
 }: {
   category: string;
   items: FeedItem[];
-}) => (
-  <section aria-labelledby={`heading-${category}`}>
-    <h2
-      id={`heading-${category}`}
-      className="mb-4 text-xl font-semibold text-foreground"
-    >
-      {category}
-    </h2>
-    {items.length === 0 ? (
-      <p className="text-sm text-zinc-500">No items found.</p>
-    ) : (
-      <ul className="grid gap-3">
-        {items.map((item) => (
-          <li key={item.id}>
-            <Link
-              href={`/item/${item.id}`}
-              className="block rounded-lg border border-zinc-200 p-4 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
-            >
-              <p className="font-medium text-foreground">{item.title}</p>
-              {item.description && (
-                <p className="mt-1 text-sm text-zinc-500 line-clamp-2">
-                  {item.description}
-                </p>
-              )}
-              <time
-                className="mt-1 block text-xs text-zinc-400"
-                dateTime={item.created_at}
-              >
-                {new Date(item.created_at).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </time>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    )}
-  </section>
-);
+}) => {
+  const styles = CATEGORY_STYLES[category] || CATEGORY_STYLES["AI News"];
+
+  return (
+    <section aria-labelledby={`heading-${category}`}>
+      <h2
+        id={`heading-${category}`}
+        className="mb-4 flex items-center gap-2 text-xl font-semibold text-foreground"
+      >
+        <span className={`inline-block h-2.5 w-2.5 rounded-full ${styles.dot}`} />
+        {category}
+      </h2>
+      {items.length === 0 ? (
+        <p className="text-sm text-zinc-500">No items found.</p>
+      ) : (
+        <ul className="grid gap-3">
+          {items.map((item) => {
+            const favicon = getFaviconUrl(item.url);
+            return (
+              <li key={item.id}>
+                <Link
+                  href={`/item/${item.id}`}
+                  className={`block rounded-lg border border-zinc-200 border-l-4 ${styles.border} ${styles.hover} p-4 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900`}
+                >
+                  <div className="flex items-start gap-2.5">
+                    {favicon && (
+                      <img
+                        src={favicon}
+                        alt=""
+                        width={16}
+                        height={16}
+                        className="mt-0.5 shrink-0 rounded-sm"
+                      />
+                    )}
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground">{item.title}</p>
+                      {item.description && (
+                        <p className="mt-1 text-sm text-zinc-500 line-clamp-2">
+                          {item.description}
+                        </p>
+                      )}
+                      <time
+                        className="mt-1 block text-xs text-zinc-400"
+                        dateTime={item.created_at}
+                      >
+                        {new Date(item.created_at).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </time>
+                    </div>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+};
 
 export default async function Home() {
   const items = await getItems();

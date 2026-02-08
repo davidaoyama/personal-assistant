@@ -34,22 +34,37 @@ export default function AboutPage() {
 
           <section>
             <h2 className="text-xl font-semibold">Data Sources</h2>
-            <ul className="mt-2 list-disc space-y-2 pl-5 text-zinc-600 dark:text-zinc-400">
-              <li>
-                <strong>AI News</strong> — RSS feeds from TechCrunch (AI
-                category), The Verge (AI section), and Ars Technica (filtered
-                for AI/ML topics). Up to 15 articles per refresh.
-              </li>
-              <li>
-                <strong>Sports</strong> — ESPN&apos;s top headlines RSS feed. Up
-                to 15 stories per refresh.
-              </li>
-              <li>
-                <strong>SWE Jobs</strong> — Engineering roles scraped from
-                Greenhouse job boards of top tech companies including Vercel,
-                Anthropic, OpenAI, and Stripe. Up to 15 postings per refresh.
-              </li>
-            </ul>
+            <div className="mt-3 space-y-3">
+              <div className="rounded-lg border border-l-4 border-zinc-200 border-l-violet-500 p-4 dark:border-zinc-800 dark:border-l-violet-500">
+                <h3 className="font-medium text-violet-700 dark:text-violet-300">
+                  AI News
+                </h3>
+                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                  RSS feeds from TechCrunch (AI category), The Verge (AI
+                  section), and Ars Technica (filtered for AI/ML topics). Up to
+                  15 articles per refresh.
+                </p>
+              </div>
+              <div className="rounded-lg border border-l-4 border-zinc-200 border-l-emerald-500 p-4 dark:border-zinc-800 dark:border-l-emerald-500">
+                <h3 className="font-medium text-emerald-700 dark:text-emerald-300">
+                  Sports
+                </h3>
+                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                  ESPN&apos;s top headlines RSS feed. Up to 15 stories per
+                  refresh.
+                </p>
+              </div>
+              <div className="rounded-lg border border-l-4 border-zinc-200 border-l-blue-500 p-4 dark:border-zinc-800 dark:border-l-blue-500">
+                <h3 className="font-medium text-blue-700 dark:text-blue-300">
+                  SWE Jobs
+                </h3>
+                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                  Engineering roles scraped from Greenhouse job boards of top
+                  tech companies including Vercel, Anthropic, OpenAI, and
+                  Stripe. Up to 15 postings per refresh.
+                </p>
+              </div>
+            </div>
           </section>
 
           <section>
@@ -65,15 +80,25 @@ export default function AboutPage() {
 
           <section>
             <h2 className="text-xl font-semibold">Tech Stack</h2>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-zinc-600 dark:text-zinc-400">
-              <li>Next.js 16 (App Router, Server Components, TypeScript)</li>
-              <li>React 19</li>
-              <li>Turso — edge SQLite database</li>
-              <li>Tailwind CSS v4</li>
-              <li>cheerio — HTML scraping for job boards</li>
-              <li>rss-parser — RSS feed parsing</li>
-              <li>Vercel Cron — daily scheduling</li>
-            </ul>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {[
+                "Next.js 16",
+                "React 19",
+                "TypeScript",
+                "Turso",
+                "Tailwind CSS v4",
+                "cheerio",
+                "rss-parser",
+                "Vercel Cron",
+              ].map((tech) => (
+                <span
+                  key={tech}
+                  className="rounded-full border border-zinc-200 px-3 py-1 text-sm text-zinc-600 dark:border-zinc-700 dark:text-zinc-400"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
           </section>
         </div>
       </main>
