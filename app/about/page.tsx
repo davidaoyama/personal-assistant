@@ -8,23 +8,23 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-background px-4 py-12 font-sans">
+    <div className="min-h-screen px-6 py-10">
       <main className="mx-auto max-w-2xl">
         <Link
           href="/"
-          className="text-sm text-zinc-500 transition-colors hover:text-foreground"
+          className="text-sm text-default-400 transition-colors hover:text-foreground"
         >
-          &larr; Back to Dashboard
+          ← Back to Dashboard
         </Link>
 
         <h1 className="mt-6 text-3xl font-bold tracking-tight text-foreground">
           About This Dashboard
         </h1>
 
-        <div className="mt-8 space-y-8 text-foreground leading-relaxed">
+        <div className="mt-8 space-y-8 leading-relaxed">
           <section>
-            <h2 className="text-xl font-semibold">Why I Built This</h2>
-            <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+            <h2 className="text-xl font-semibold text-foreground">Why I Built This</h2>
+            <p className="mt-2 text-default-500">
               I want to stay on top of what&apos;s happening in AI, I love
               sports (especially the Falcons and Seahawks), and I want to know
               about open SWE roles at companies I care about. Instead of
@@ -34,32 +34,26 @@ export default function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold">Data Sources</h2>
+            <h2 className="text-xl font-semibold text-foreground">Data Sources</h2>
             <div className="mt-3 space-y-3">
-              <div className="rounded-lg border border-l-4 border-zinc-200 border-l-violet-500 p-4 dark:border-zinc-800 dark:border-l-violet-500">
-                <h3 className="font-medium text-violet-700 dark:text-violet-300">
-                  AI News
-                </h3>
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              <div className="rounded-lg border border-default-200/50 border-l-4 border-l-violet-500 p-4">
+                <h3 className="font-medium text-violet-400">AI News</h3>
+                <p className="mt-1 text-sm text-default-500">
                   RSS feeds from TechCrunch (AI category), The Verge (AI
                   section), and Ars Technica (filtered for AI/ML topics). Up to
                   15 articles per refresh.
                 </p>
               </div>
-              <div className="rounded-lg border border-l-4 border-zinc-200 border-l-emerald-500 p-4 dark:border-zinc-800 dark:border-l-emerald-500">
-                <h3 className="font-medium text-emerald-700 dark:text-emerald-300">
-                  Sports
-                </h3>
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              <div className="rounded-lg border border-default-200/50 border-l-4 border-l-emerald-500 p-4">
+                <h3 className="font-medium text-emerald-400">Sports</h3>
+                <p className="mt-1 text-sm text-default-500">
                   ESPN&apos;s top headlines RSS feed. Up to 15 stories per
                   refresh.
                 </p>
               </div>
-              <div className="rounded-lg border border-l-4 border-zinc-200 border-l-blue-500 p-4 dark:border-zinc-800 dark:border-l-blue-500">
-                <h3 className="font-medium text-blue-700 dark:text-blue-300">
-                  SWE Jobs
-                </h3>
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              <div className="rounded-lg border border-default-200/50 border-l-4 border-l-blue-500 p-4">
+                <h3 className="font-medium text-blue-400">SWE Jobs</h3>
+                <p className="mt-1 text-sm text-default-500">
                   Engineering roles scraped from Greenhouse job boards of top
                   tech companies including Vercel, Anthropic, OpenAI, and
                   Stripe. Up to 15 postings per refresh.
@@ -69,8 +63,8 @@ export default function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold">How It Updates</h2>
-            <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+            <h2 className="text-xl font-semibold text-foreground">How It Updates</h2>
+            <p className="mt-2 text-default-500">
               A scheduled cron job runs daily at 9:00 AM EST via Vercel Cron. It
               fetches new items from all three sources in parallel, deduplicates
               them by URL, and stores them in a Turso edge database. You can also
@@ -80,7 +74,7 @@ export default function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold">Tech Stack</h2>
+            <h2 className="text-xl font-semibold text-foreground">Tech Stack</h2>
             <div className="mt-3 flex flex-wrap gap-2">
               {[
                 "Next.js 16",
@@ -88,13 +82,14 @@ export default function AboutPage() {
                 "TypeScript",
                 "Turso",
                 "Tailwind CSS v4",
+                "HeroUI",
                 "cheerio",
                 "rss-parser",
                 "Vercel Cron",
               ].map((tech) => (
                 <span
                   key={tech}
-                  className="rounded-full border border-zinc-200 px-3 py-1 text-sm text-zinc-600 dark:border-zinc-700 dark:text-zinc-400"
+                  className="rounded-full border border-default-200 px-3 py-1 text-sm text-default-500"
                 >
                   {tech}
                 </span>
