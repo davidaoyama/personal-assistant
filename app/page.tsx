@@ -129,7 +129,7 @@ export default async function Home() {
       <main className="mx-auto max-w-6xl">
         <header className="mb-10 flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            David&apos;s Daily Standup
+            David&apos;s Daily News Update
           </h1>
           <div className="flex items-center gap-4">
             <Link

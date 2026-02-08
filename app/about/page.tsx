@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About — David's Daily Standup",
+  title: "About — David's Daily News Update",
   description: "Why I built this dashboard and how it works.",
 };
 
@@ -29,7 +29,7 @@ export default function AboutPage() {
               sports (especially the Falcons and Seahawks), and I want to know
               about open SWE roles at companies I care about. Instead of
               bouncing between a dozen tabs every morning, I built this to
-              aggregate everything into one quick daily standup view.
+              aggregate everything into one quick daily news update.
             </p>
           </section>
 

@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "David's Daily Standup",
-  description: "AI news, sports headlines, and SWE job openings — all in one feed.",
+  title: "David's Daily News Update",
+  description: "AI news, sports headlines, and SWE job openings — all in one daily update.",
 };
 
 export default function RootLayout({
